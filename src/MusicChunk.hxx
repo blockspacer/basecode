@@ -116,7 +116,7 @@ struct MusicChunkInfo {
  */
 struct MusicChunk : MusicChunkInfo {
 	/** the data (probably PCM) */
-	uint8_t data[CHUNK_SIZE - sizeof(MusicChunkInfo)];
+	uint8_t data[CHUNK_SIZE];
 
 	/**
 	 * Prepares appending to the music chunk.  Returns a buffer
@@ -145,6 +145,5 @@ struct MusicChunk : MusicChunkInfo {
 	bool Expand(AudioFormat af, size_t length) noexcept;
 };
 
-static_assert(sizeof(MusicChunk) == CHUNK_SIZE, "Wrong size");
 
 #endif
