@@ -55,6 +55,9 @@ struct TypeTraits<const char *> : BasicTypeTraits<DBUS_TYPE_STRING> {
 
 using StringTypeTraits = TypeTraits<const char *>;
 
+struct ObjectPathTypeTraits : BasicTypeTraits<DBUS_TYPE_OBJECT_PATH> {
+};
+
 template<>
 struct TypeTraits<dbus_uint32_t> : BasicTypeTraits<DBUS_TYPE_UINT32> {
 };
@@ -81,20 +84,23 @@ struct DictEntryTypeTraits {
 
 using VariantTypeTraits = BasicTypeTraits<DBUS_TYPE_VARIANT>;
 
+/**
+ * Concatenate all TypeAsString members to one string.
+ */
 template<typename T, typename... ContainedTraits>
-struct _MakeStructTypeAsString
+struct ConcatTypeAsString
 	: TemplateString::Concat<typename T::TypeAsString,
-				 _MakeStructTypeAsString<ContainedTraits...>> {};
+				 ConcatTypeAsString<ContainedTraits...>> {};
 
 template<typename T>
-struct _MakeStructTypeAsString<T> : T::TypeAsString {};
+struct ConcatTypeAsString<T> : T::TypeAsString {};
 
 template<typename... ContainedTraits>
 struct StructTypeTraits {
 	static constexpr int TYPE = DBUS_TYPE_STRUCT;
 
 	typedef TemplateString::Concat<TemplateString::CharAsString<DBUS_STRUCT_BEGIN_CHAR>,
-				       _MakeStructTypeAsString<ContainedTraits...>,
+				       ConcatTypeAsString<ContainedTraits...>,
 				       TemplateString::CharAsString<DBUS_STRUCT_END_CHAR>> TypeAsString;
 };
 
