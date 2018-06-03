@@ -46,6 +46,7 @@ src_mpd_LDADD = \
 	$(STORAGE_LIBS) \
 	$(PLAYLIST_LIBS) \
 	$(AVAHI_LIBS) \
+	$(DBUS_LIBS) \
 	$(LIBWRAP_LDFLAGS) \
 	$(SQLITE_LIBS) \
 	$(DECODER_LIBS) \
@@ -66,6 +67,8 @@ src_mpd_LDADD = \
 	$(ICU_LDADD) \
 	libutil.a \
 	$(SYSTEMD_DAEMON_LIBS)
+
+src_mpd_CPPFLAGS = $(AM_CPPFLAGS) $(DBUS_CFLAGS)
 
 src_mpd_SOURCES = \
 	src/Main.cxx src/Main.hxx
@@ -278,6 +281,26 @@ ALSA_SOURCES = \
 	src/lib/alsa/PeriodBuffer.hxx \
 	src/lib/alsa/NonBlock.cxx src/lib/alsa/NonBlock.hxx
 
+if ENABLE_DBUS
+noinst_LIBRARIES += libodbus.a
+libodbus_a_SOURCES = \
+	src/lib/dbus/AppendIter.hxx \
+	src/lib/dbus/Connection.cxx src/lib/dbus/Connection.hxx \
+	src/lib/dbus/Error.cxx src/lib/dbus/Error.hxx \
+	src/lib/dbus/Iter.hxx \
+	src/lib/dbus/Message.cxx src/lib/dbus/Message.hxx \
+	src/lib/dbus/PendingCall.hxx \
+	src/lib/dbus/ReadIter.hxx \
+	src/lib/dbus/ObjectManager.hxx \
+	src/lib/dbus/UDisks2.hxx \
+	src/lib/dbus/ScopeMatch.cxx src/lib/dbus/ScopeMatch.hxx \
+	src/lib/dbus/Types.hxx \
+	src/lib/dbus/Values.hxx \
+	src/lib/dbus/Glue.cxx src/lib/dbus/Glue.hxx \
+	src/lib/dbus/Watch.cxx src/lib/dbus/Watch.hxx
+libodbus_a_CPPFLAGS = $(AM_CPPFLAGS) $(DBUS_CFLAGS)
+endif
+
 #
 # Android native library
 #
@@ -488,6 +511,7 @@ libutil_a_SOURCES = \
 	src/util/FormatString.cxx src/util/FormatString.hxx \
 	src/util/Tokenizer.cxx src/util/Tokenizer.hxx \
 	src/util/TextFile.hxx \
+	src/util/TemplateString.hxx \
 	src/util/TimeParser.cxx src/util/TimeParser.hxx \
 	src/util/UriUtil.cxx src/util/UriUtil.hxx \
 	src/util/Manual.hxx \
@@ -816,6 +840,7 @@ libneighbor_a_SOURCES = \
 	src/neighbor/NeighborPlugin.hxx
 
 libneighbor_a_CPPFLAGS = $(AM_CPPFLAGS) \
+	$(DBUS_CFLAGS) \
 	$(UPNP_CFLAGS) \
 	$(SMBCLIENT_CFLAGS)
 
@@ -836,6 +861,15 @@ libneighbor_a_SOURCES += \
 NEIGHBOR_LIBS += \
 	$(EXPAT_LIBS) \
 	$(UPNP_LIBS)
+endif
+
+if ENABLE_UDISKS
+libneighbor_a_SOURCES += \
+	$(UDISKS_SOURCES) \
+	src/neighbor/plugins/UdisksNeighborPlugin.cxx src/neighbor/plugins/UdisksNeighborPlugin.hxx
+NEIGHBOR_LIBS += \
+	$(DBUS_LIBS) \
+	libodbus.a
 endif
 
 endif

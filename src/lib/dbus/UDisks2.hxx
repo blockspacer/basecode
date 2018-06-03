@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2017 The Music Player Daemon Project
+ * Copyright 2003-2018 The Music Player Daemon Project
  * http://www.musicpd.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,34 +17,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "config.h"
-#include "Registry.hxx"
-#include "NeighborPlugin.hxx"
-#include "plugins/SmbclientNeighborPlugin.hxx"
-#include "plugins/UpnpNeighborPlugin.hxx"
-#include "plugins/UdisksNeighborPlugin.hxx"
+#ifndef UDISKS2_HXX
+#define UDISKS2_HXX
 
-#include <string.h>
+#define UDISKS2_PATH "/org/freedesktop/UDisks2"
+#define UDISKS2_INTERFACE "org.freedesktop.UDisks2"
 
-const NeighborPlugin *const neighbor_plugins[] = {
-#ifdef ENABLE_SMBCLIENT
-	&smbclient_neighbor_plugin,
 #endif
-#ifdef ENABLE_UPNP
-	&upnp_neighbor_plugin,
-#endif
-#ifdef ENABLE_UDISKS
-	&udisks_neighbor_plugin,
-#endif
-	nullptr
-};
-
-const NeighborPlugin *
-GetNeighborPluginByName(const char *name) noexcept
-{
-	for (auto i = neighbor_plugins; *i != nullptr; ++i)
-		if (strcmp((*i)->name, name) == 0)
-			return *i;
-
-	return nullptr;
-}
